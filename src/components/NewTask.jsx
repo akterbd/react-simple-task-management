@@ -1,20 +1,33 @@
-import { useState } from "react"
+import { useRef, useState } from "react";
+import Modal from "./Modal";
 
 const NewTask = ({onAdd}) => {
-  const [enteredTask, setEnteredTask] = useState('');
-  const handleChange = (event) => {
-    setEnteredTask(event.target.value);
+  const modal = useRef();
+  const [taskState, setTaskState] = useState('');
+  const handleSaveTask = () => {
+    if(taskState.trim() === ''){
+      modal.current.open();
+      return;
+    }
+    onAdd(taskState);
+    setTaskState('');
   }
-  const handleClick = () => {
-    if(enteredTask.trim() === '') return;
-    onAdd(enteredTask);
-    setEnteredTask('');
+
+  const handleOnchange = (event) => {
+    setTaskState(event.target.value);
   }
+
   return (
-    <div className="flex items-center gap-4">
-        <input onChange={handleChange} value={enteredTask} type="text" className="w-64 px-2 py-1 rounded-sm bg-stone-200" />
-        <button onClick={handleClick} className="text-stone-700 hover:text-stone-950">Add Task</button>
-    </div>
+    <>
+      <Modal ref={modal} buttonCaption="Okay">
+            <h2 className="text-xl font-bold text-stone-700 my-4">Invalid Input</h2>
+            <p className="text-stone-600 my-4">Ops... looks like you forgot to enter a value.</p>
+        </Modal>
+      <div className="flex items-center gap-4">
+          <input onChange={handleOnchange} type="text" value={taskState} className="w-64 px-2 py-1 rounded-sm bg-stone-200" />
+          <button onClick={handleSaveTask} className="text-stone-700 hover:text-stone-950">Add Task</button>
+      </div>
+    </>
   )
 }
 
